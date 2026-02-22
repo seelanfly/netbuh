@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-tomcat-app
+  labels:
+    app: my-tomcat-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-tomcat-app
+  template:
+    metadata:
+      labels:
+        app: my-tomcat-app
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: my-tomcat-app
+          image: ghcr.io/seelanfly/my-tomcat-app:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /my-tomcat-app/hello
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /my-tomcat-app/hello
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
